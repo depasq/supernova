@@ -5,7 +5,8 @@
 }
 
 a {
-    color: black;
+    color: #fff;
+    text-decoration: none;
 }
 
 body {
@@ -138,5 +139,54 @@ h1.cover-heading:hover {
     padding: 0;
     color: #6ff;
     text-shadow: 2px 2px #666
+}
+.nextBG {
+    position: absolute;
+    z-index: 1;
+    height: 40px;
+    width: 0px;
+    background-color: rgba(255, 255, 255, .5);
+    left: 0px;
+    bottom: 25px;
+    border-radius: 0px 25px 25px 0px;
+    transition: 0.8s; 
+}
+.next {
+    position: absolute;
+    font-weight: normal;
+    font-size: 24px;
+    text-indent: 0px;
+    margin: 5px;
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+    transition: 2s;
+    white-space: pre-wrap;
+    text-shadow: 2px 2px #666
+}
+
+#textBoxBG {
+    position: absolute;
+    z-index: 1;
+    height: 220px;
+    width: 0px;
+    background-color: rgba(255, 255, 255, .5);
+    right: 0px;
+    bottom: 25px;
+    border-radius: 25px 0px 0px 25px;
+    transition: 0.8s;
+}
+#introInfo {
+    position: absolute;
+    font-weight: normal;
+    font-size: 22px;
+    text-indent: 0px;
+    margin: 15;
+    padding: 0;
+    text-align: center;
+    color: #000;
+    opacity: 0;
+    transition: 2s;
+    white-space: pre-wrap;
 }
 
