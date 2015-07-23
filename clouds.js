@@ -56,7 +56,8 @@ function createCloud() {
     var x = 25 - (Math.random() * 250);
     var y = 25 - (Math.random() * 250);
     var z = 25 - (Math.random() * 50);
-    var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px )';
+    //var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px )';
+    var t = 'translate3d(' + x +'px, ' + y + 'px, ' + z + 'px)';
     div.style.webkitTransform = t;
     div.style.MozTransform = t;
     div.style.oTransform = t;
@@ -90,7 +91,8 @@ function createCloud() {
             s: s,
             speed: .025 * Math.random()
         };
-        var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px ) rotateZ( ' + a + 'deg ) scale( ' + s + ' )';
+        //var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px ) rotateZ( ' + a + 'deg ) scale( ' + s + ' )';
+        var t = 'translate3d(' + x +'px, ' + y + 'px, ' + z + 'px) rotateZ( ' + a + 'deg ) scale( ' + s + ' )';
         cloud.style.webkitTransform = t;
         cloud.style.MozTransform = t;
         cloud.style.oTransform = t;
@@ -109,7 +111,8 @@ function createStar() {
     var x = 2200 - (Math.random() * 5150);
     var y = 2200 - (Math.random() * 5200);
     var z = -5 - (Math.random() * 7500);
-    var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px )';
+    //var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px )';
+    var t = 'translate3d(' + x +'px, ' + y + 'px, ' + z + 'px)';
     div.style.webkitTransform = t;
     div.style.MozTransform = t;
     div.style.oTransform = t;
@@ -143,7 +146,8 @@ function createStar() {
             s: s,
             speed: .01 * Math.random()
         };
-        var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px ) rotateZ( ' + a + 'deg ) scale( ' + s + ' )';
+        //var t = 'translateX( ' + x + 'px ) translateY( ' + y + 'px ) translateZ( ' + z + 'px ) rotateZ( ' + a + 'deg ) scale( ' + s + ' )';
+        var t = 'translate3d(' + x +'px, ' + y + 'px, ' + z + 'px) rotateZ( ' + a + 'deg ) scale( ' + s + ' )';
         cloud.style.webkitTransform = t;
         cloud.style.MozTransform = t;
         cloud.style.oTransform = t;
@@ -173,7 +177,7 @@ function generate() {
     for (var j = 0; j < 10; j++) {
         objects.push(createCloud());
     }
-    for (var j = 0; j < 200; j++) {
+    for (var j = 0; j < 100; j++) {
         objects.push(createStar());
     }
 }
@@ -223,7 +227,8 @@ function update() {
     for (var j = 0; j < layers.length; j++) {
         var layer = layers[j];
         layer.data.a += layer.data.speed;
-        var t = 'translateX( ' + layer.data.x + 'px ) translateY( ' + layer.data.y + 'px ) translateZ( ' + layer.data.z + 'px ) rotateY( ' + (-worldYAngle) + 'deg ) rotateX( ' + (-worldXAngle) + 'deg ) rotateZ( ' + layer.data.a + 'deg ) scale( ' + layer.data.s + ')';
+        //var t = 'translateX( ' + layer.data.x + 'px ) translateY( ' + layer.data.y + 'px ) translateZ( ' + layer.data.z + 'px ) rotateY( ' + (-worldYAngle) + 'deg ) rotateX( ' + (-worldXAngle) + 'deg ) rotateZ( ' + layer.data.a + 'deg ) scale( ' + layer.data.s + ')';
+        var t = 'translate3d(' + layer.data.x +'px, ' + layer.data.y + 'px, ' + layer.data.z + 'px) rotateY( ' + (-worldYAngle) + 'deg ) rotateX( ' + (-worldXAngle) + 'deg ) rotateZ( ' + layer.data.a + 'deg ) scale( ' + layer.data.s + ')';
         layer.style.webkitTransform = t;
         layer.style.MozTransform = t;
         layer.style.oTransform = t;
