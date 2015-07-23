@@ -1,0 +1,57 @@
+
+@keyframes site-wrapper {
+    /* CSS3 */
+    0% {
+        background-color: #a9eef3;
+    }
+    25% {
+        background-color: #a0c2ef;
+    }
+    50% {
+        background-color: #7692d0;
+    }
+    75% {
+        background-color: #bbdbef;
+    }
+    100% {
+        background-color: #ccddef;
+    }
+}
+
+@-moz-keyframes site-wrapper {
+    /* Firefox */
+    0% {
+        background-color: #a9eef3;
+    }
+    25% {
+        background-color: #a0c2ef;
+    }
+    50% {
+        background-color: #7692d0;
+    }
+    75% {
+        background-color: #bbdbef;
+    }
+    100% {
+        background-color: #ccddef;
+    }
+}
+
+@-webkit-keyframes site-wrapper {
+    /* Webkit */
+    0% {
+        background-color: #a9eef3;
+    }
+    25% {
+        background-color: #a0c2ef;
+    }
+    50% {
+        background-color: #7692d0;
+    }
+    75% {
+        background-color: #bbdbef;
+    }
+    100% {
+        background-color: #ccddef;
+    }
+}
