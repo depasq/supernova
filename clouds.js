@@ -42,6 +42,13 @@ viewport.style.oPerspective = p;
 
 generate();
 
+//show zoom tip after some time 
+if (d == 0) {
+    setTimeout(function() {
+       document.getElementById('zoomIN').style.opacity = 1;
+    }, 2500);
+} 
+
 function createCloud() {
 
     var div = document.createElement('div');
@@ -176,6 +183,12 @@ function updateView() {
 
     //var t = 'rotateX( ' + worldXAngle + 'deg) rotateY( ' + worldYAngle + 'deg)';
     // to remove nebula element when zoomed out enough
+
+    //remove the zoom tip if the user is already zooming
+    if (d != 0) {
+        document.getElementById('zoomIN').style.opacity = 0;
+    }
+
     if (d < -250) {
         d = -250;
         introInfo.style.display = "block";

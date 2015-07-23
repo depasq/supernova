@@ -189,4 +189,17 @@ h1.cover-heading:hover {
     transition: 2s;
     white-space: pre-wrap;
 }
+#tryZoom{
+    position: absolute;
+    z-index: 1;
+    height: 200px;
+    width: 400px;
+    right: 0px;
+    top: 250px;
+    transition: 0.8s;    
+}
+#zoomIN{
+    opacity: 0;
+    transition: 2s;
+}
 
