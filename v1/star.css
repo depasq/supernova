@@ -1,0 +1,205 @@
+* {
+    /*box-sizing: border-box;*/
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+body {
+    color: #eee;
+    font-family: 'Carrois Gothic SC', sans-serif;
+    font-size: 20px;
+    line-height: 30px;
+    overflow: hidden;
+    background: url(img/background.png) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-szie: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+p {
+    color: black;
+    position: relative;
+    z-index: 1000;
+}
+
+#viewport {
+    -webkit-perspective: 1000;
+    -moz-perspective: 1000;
+    -o-perspective: 1000;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    animation: site-wrapper 50s infinite alternate;
+    /* CSS3 */
+    -moz-animation: site-wrapper 50s infinite alternate;
+    /* Firefox */
+    -webkit-animation: site-wrapper 50s infinite alternate;
+    /* Webkit */
+  }
+
+#world {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -256px;
+    margin-top: -256px;
+    height: 512px;
+    width: 512px;
+    background-color: rgba(255, 0, 0, 0);
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -o-transform-style: preserve-3d;
+}
+
+#world div {
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -o-transform-style: preserve-3d;
+}
+
+.cloudBase {
+    background-color: rgba(255, 0, 255, 0);
+    position: absolute;
+    left: 256px;
+    top: 256px;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+}
+
+.cloudLayer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 256px;
+    height: 256px;
+    margin-left: -128px;
+    margin-top: -128px;
+    background-color: rgba(0, 255, 255, 0);
+    -webkit-transition: opacity .5s ease-out;
+    -moz-transition: opacity .5s ease-out;
+    -o-transition: opacity .5s ease-out;
+}
+
+h1.cover-heading {
+    display: inline-block;
+    border: 1px solid;
+    padding: 1.25rem 1.6875rem;
+    text-align: center;
+    position: relative;
+    z-index: 1000;
+}
+
+h1.cover-heading:hover {
+    background-color: black;
+    color: white;
+    border-color: black;
+    position: relative;
+    z-index: 1000;
+}
+
+#cover {
+    text-align: center;
+    display: table;
+    width: 100%;
+    height: 100%;
+    /* For at least Firefox */
+    min-height: 100%;
+}
+#site-title-bg {
+    /*places title over map canvas*/
+    position: absolute;
+    z-index: 1;
+    height: 120px;
+    width: 1150px;
+    background-color: rgba(255, 255, 255, .25);
+    left: 0px;
+    top: 50px;
+    border-radius: 0px 25px 25px 0px;
+}
+.site-title {
+    position: absolute;
+    font-family: 'Sarpanch', sans-serif;
+    font-weight: normal;
+    font-size: 50px;
+    text-indent: 0px;
+    top: 45px;
+    left: 100px;
+    margin: 0;
+    padding: 0;
+    color: #6ff;
+    text-shadow: 2px 2px #666
+}
+.nextBG {
+    position: absolute;
+    z-index: 1;
+    height: 40px;
+    width: 0px;
+    background-color: rgba(255, 255, 255, .5);
+    left: 0px;
+    bottom: 25px;
+    border-radius: 0px 25px 25px 0px;
+    transition: 0.8s; 
+}
+.next {
+    position: absolute;
+    font-weight: normal;
+    font-size: 24px;
+    text-indent: 0px;
+    margin: 5px;
+    text-align: center;
+    color: #fff;
+    opacity: 0;
+    transition: 2s;
+    white-space: pre-wrap;
+    text-shadow: 2px 2px #666
+}
+
+#textBoxBG {
+    position: absolute;
+    z-index: 1;
+    height: 220px;
+    width: 0px;
+    background-color: rgba(255, 255, 255, .5);
+    right: 0px;
+    bottom: 25px;
+    border-radius: 25px 0px 0px 25px;
+    transition: 0.8s;
+}
+#introInfo {
+    position: absolute;
+    font-weight: normal;
+    font-size: 22px;
+    text-indent: 0px;
+    margin: 15;
+    padding: 0;
+    text-align: center;
+    color: #000;
+    opacity: 0;
+    transition: 2s;
+    white-space: pre-wrap;
+}
+#tryZoom{
+    position: absolute;
+    z-index: 1;
+    height: 200px;
+    width: 400px;
+    right: 0px;
+    top: 250px;
+    transition: 0.8s;    
+}
+#zoomIN{
+    opacity: 0;
+    transition: 2s;
+}
+
