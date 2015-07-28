@@ -11,7 +11,7 @@ animate();
 //show zoom tip after some time 
 setTimeout(function() {
     document.getElementById('zoomIN').style.opacity = 1;
-}, 1500);
+}, 1000);
 
 function init() {
     // SCENE
@@ -85,7 +85,9 @@ function createObjects() {
         var nebMaterial = new THREE.SpriteMaterial({
             map: nebTexture,
             useScreenCoordinates: false,
-            name: 'clouds'
+            name: 'clouds',
+            depthWrite: false,
+            depthTest: false
         });
         var sprite = new THREE.Sprite(nebMaterial);
 
