@@ -5,6 +5,29 @@
     <link href='http://fonts.googleapis.com/css?family=Sarpanch' rel='stylesheet' type='text/css'>
     <title>A Star is Born</title>
     <style>
+	#site-title-bg {
+	    /*places title over map canvas*/
+	    position: absolute;
+	    z-index: 1;
+	    height: 70px;
+	    width: 500px;
+	    background-color: rgba(255, 255, 255, .25);
+	    left: 0px;
+	    top: 50px;
+	    border-radius: 0px 25px 25px 0px;
+	}
+	.site-title {
+	    position: absolute;
+	    font-family: 'Sarpanch', sans-serif;
+	    font-weight: normal;
+	    font-size: 50px;
+	    text-indent: 0px;
+	    left: 70px;
+	    margin: 0;
+	    padding: 0;
+	    color: #6ff;
+	    text-shadow: 2px 2px #666
+	}
     #textBoxBG {
         position: absolute;
         z-index: 1;
@@ -22,7 +45,7 @@
         font-weight: normal;
         font-size: 22px;
         text-indent: 0px;
-        margin: 15;
+        margin: 5;
         padding: 0;
         text-align: center;
         color: #000;
@@ -44,8 +67,12 @@
 </head>
 
 <body>
+    <div id="site-title-bg">
+        <h1 class="site-title">A Star is Born</h1>
+    </div>
+
     <div id="textBoxBG">
-        <div id="introInfo">Stars are born in massive clouds of cold gas and dust called nebulas. Something as seemingly insignificant as the gravitational tug of a passing star can create an instability in these "stellar nurseries" triggering a gravitational collapse leading to clumping of material under its own gravity. As the clumps condense, they heat up, eventually igniting thermonuclear fusion in the core and a star is born. Massive stars forming this way pull in large amounts of material in the process. </div>
+        <div id="introInfo">Once thermonuclear fusion triggers at the core of a clump, converting hydrogen into helium, a star is born. This massive supergiant star burns a brilliant blue with a luminosity nearly 1 million times the sun and a mass about 10-100 times that of the sun. Due to its massive size, this star has a relatively short lifespan of about 30 million years. When its core of hydrogen fuel is depleted, the star will expand in size and begin fusing heavier elements in the core. Eventually, a solid iron core develops which can not be fused into any heavier elements. The star then collapses in on itself, triggering a violent explosion known as a supernova. </div>
     </div>
     <script src="js/THREEx.KeyboardState.js"></script>
     <script src="js/THREEx.FullScreen.js"></script>
