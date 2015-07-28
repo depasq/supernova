@@ -15,7 +15,7 @@ body {
     font-size: 20px;
     line-height: 30px;
     overflow: hidden;
-    background: url(img/background.png) no-repeat center center fixed;
+    background: url(../img/background.png) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-szie: cover;
     -o-background-size: cover;

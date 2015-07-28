@@ -53,7 +53,31 @@
         transition: 2s;
         white-space: pre-wrap;
     }
-    
+    .nextBG {
+    position: absolute;
+    z-index: 1;
+    height: 40px;
+    width: 0px;
+    background-color: rgba(255, 255, 255, .5);
+    left: 0px;
+    bottom: 25px;
+    border-radius: 0px 25px 25px 0px;
+    transition: 0.8s; 
+    }
+    .next {
+        position: absolute;
+        font-weight: normal;
+        font-size: 24px;
+        text-indent: 0px;
+        margin: 5px;
+        text-align: center;
+        color: #fff;
+        opacity: 0;
+        transition: 2s;
+        white-space: pre-wrap;
+        text-shadow: 2px 2px #666
+    }
+
     body {
         font-family: 'Carrois Gothic SC', sans-serif;
         margin: 0;
@@ -75,6 +99,10 @@
     <div id="textBoxBG">
         <div id="introInfo">Once thermonuclear fusion triggers at the core of a clump, converting hydrogen into helium, a star is born. This massive supergiant star burns a brilliant blue with a luminosity nearly 1 million times the sun and a mass about 10-100 times that of the sun. Due to its massive size, this star has a relatively short lifespan of about 30 million years. When its core of hydrogen fuel is depleted, the star will expand in size and begin fusing heavier elements in the core. Eventually, a solid iron core develops which can not be fused into any heavier elements. The star then collapses in on itself, triggering a violent explosion known as a supernova. </div>
     </div>
+    <div class="nextBG">
+        <div class="next"><a href="./star.html">Next</a></div>
+    </div>
+
     <script src="js/THREEx.KeyboardState.js"></script>
     <script src="js/THREEx.FullScreen.js"></script>
     <script src="js/THREEx.WindowResize.js"></script>
@@ -104,7 +132,7 @@
 
     var geometry = new THREE.SphereGeometry(0.5, 32, 32);
     var material = new THREE.MeshBasicMaterial();
-    material.map = THREE.ImageUtils.loadTexture('img/starmap1k.png')
+    material.map = THREE.ImageUtils.loadTexture('img/starmap1k_v2.png')
     var starMesh = new THREE.Mesh(geometry, material);
     scene.add(starMesh);
     onRenderFcts.push(function(delta, now) {
@@ -125,9 +153,10 @@
 
     var geometry = new THREE.SphereGeometry(0.505, 32, 32);
     var material = new THREE.MeshPhongMaterial({
-        map: new THREE.ImageUtils.loadTexture('img/starmap2_1k.png'),
+        map: new THREE.ImageUtils.loadTexture('img/starmap2_1k_v2.png'),
         side: THREE.DoubleSide,
-        opacity: 0.8,
+        opacity: 0.3,
+        blending: THREE.AdditiveBlending,
         transparent: true,
         depthWrite: false,
     });
@@ -197,10 +226,14 @@
     setTimeout(function() {
         document.getElementById('introInfo').style.display = "block";
         document.getElementById('textBoxBG').style.width = 950 + 'px';
+        document.getElementsByClassName('nextBG')[0].style.width = 70 + 'px';
         setTimeout(function() {
+            //info.style.opacity = 1;
+            document.getElementsByClassName('next')[0].style.opacity = 1;
             document.getElementById('introInfo').style.opacity = 1;
         }, 500);
     }, 500);
+ 
 
     //render();
     </script>

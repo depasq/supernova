@@ -67,7 +67,7 @@ function createCloud() {
         var cloud = document.createElement('img');
         cloud.style.opacity = 0;
         var r = Math.random();
-        var src = 'img/cloud' + j + '.png';
+        var src = '../img/cloud' + j + '.png';
         (function(img) {
             img.addEventListener('load', function() {
                 img.style.opacity = .5;
@@ -122,7 +122,7 @@ function createStar() {
         var cloud = document.createElement('img');
         cloud.style.opacity = 0;
         var r = Math.random();
-        var src = 'img/star.png';
+        var src = '../img/star.png';
         (function(img) {
             img.addEventListener('load', function() {
                 img.style.opacity = .7;
