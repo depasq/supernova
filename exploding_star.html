@@ -79,6 +79,36 @@
     </div>-->
     <div id="container"></div>
 
+    <script type="x-shader/x-vertex" id="GlowVertexShader">
+        // uniform vec3 viewVector;
+        // void main() 
+        // {
+        //     vec3 vNormal = normalize( normalMatrix * normal );
+        //     vec3 vNormel = normalize( normalMatrix * viewVector );
+        //     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        // }
+        uniform vec3 viewVector;
+        uniform float c;
+        uniform float p;
+        varying float intensity;
+        void main() 
+        {
+            vec3 vNormal = normalize( normalMatrix * normal );
+            vec3 vNormel = normalize( normalMatrix * viewVector );
+            intensity = pow( c - dot(vNormal, vNormel), p);
+            
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }
+    </script>
+    <script id="GlowFragmentShader" type="x-shader/x-vertex">
+        uniform vec3 glowColor;
+        varying float intensity;
+        void main() 
+        {
+            vec3 glow = glowColor * intensity;
+            gl_FragColor = vec4( glow, 1.0 );
+        }
+    </script>
     <script type="x-shader/x-vertex" id="vertexShader">
 
         //
@@ -327,7 +357,7 @@
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     camera.target = new THREE.Vector3( 0, 0, 0 );
-    camera.position.z = 10;
+    camera.position.z = 25;
 
     //EVENTS
     THREEx.WindowResize(renderer, camera);
@@ -363,36 +393,97 @@
         fragmentShader: document.getElementById( 'fragmentShader').textContent
     });
     var mesh2 = new THREE.Mesh(
-        new THREE.IcosahedronGeometry( 10, 6 ),
+        new THREE.IcosahedronGeometry( 8, 5 ),
         material2
     );
 
     scene.add( mesh2 );
 
+    var material3 = new THREE.MeshBasicMaterial({
+        color: 0xb7ff00,
+        wireframe: true
+    });
+
+    //TORUS to be used for creating flares off of star
+    var mesh3 = new THREE.Mesh(
+        new THREE.TorusGeometry(22, 3, 16, 100),
+        material3
+    );
+    mesh3.position.z = 8;
+    //scene.add( mesh3 );
+
     var geometry = new THREE.SphereGeometry(15, 32, 32);
     var material = new THREE.MeshBasicMaterial();
-    material.map = THREE.ImageUtils.loadTexture('img/starmap1k_v2.png')
+    material.map = THREE.ImageUtils.loadTexture('img/starmap2_1k_v3.png')
     var starMesh = new THREE.Mesh(geometry, material);
     scene.add(starMesh);
     onRenderFcts.push(function(delta, now) {
         starMesh.rotateY(1 / 32 * delta)
     })
 
+//using lensflare sprite as glow around star
     var spriteMaterial = new THREE.SpriteMaterial({
-        map: new THREE.ImageUtils.loadTexture('img/glow.png'),
+        map: new THREE.ImageUtils.loadTexture('img/lensflare0_alpha.png'),
         useScreenCoordinates: false,
         alignment: THREE.SpriteAlignment.center,
-        color: 0x0000ff,
+        color: 0x0033cc,
         transparent: false,
         blending: THREE.AdditiveBlending
     });
     var sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(2.0, 2.0, 2.0);
+    sprite.scale.set(150.0, 150.0, 150.0);
+    var sp2 = sprite.clone();
     starMesh.add(sprite); // this centers the glow at the mesh
+    starMesh.add(sp2);
+
+//add in custom shader around rim of star
+    // var material4 = new THREE.MeshBasicMaterial({
+    //     color: 0xb7ff00,
+    //     wireframe: true
+    // });
+ 
+    var GlowMaterial = new THREE.ShaderMaterial({
+        uniforms: { 
+            "c":   { type: "f", value: 0.5 },
+            "p":   { type: "f", value: 3.0 },
+            glowColor: { type: "c", value: new THREE.Color(0xffffff) },
+            viewVector: { type: "v3", value: camera.position }
+        },
+        vertexShader: document.getElementById( 'GlowVertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'GlowFragmentShader' ).textContent,
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthWrite: false,
+        depthTest: true
+    });
+    var ballGeometry = new THREE.SphereGeometry (23, 32, 20);
+    var ball = new THREE.Mesh( ballGeometry, GlowMaterial );
+    scene.add( ball );
+
+    var InnerGlow = new THREE.ShaderMaterial({
+       uniforms: { 
+            "c":   { type: "f", value: 0.5 },
+            "p":   { type: "f", value: 1.0 },
+            glowColor: { type: "c", value: new THREE.Color(0xffffff) },
+            viewVector: { type: "v3", value: camera.position }
+        },
+        vertexShader: document.getElementById( 'GlowVertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'GlowFragmentShader' ).textContent,
+        //side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        // opacity: 0.2,
+         transparent: true,
+        depthWrite: false,
+        depthTest: true
+    });
+    var IG_Geometry = new THREE.SphereGeometry (15.11, 32, 40);
+    var IG = new THREE.Mesh( IG_Geometry, InnerGlow );
+    scene.add( IG );
 
     var geometry = new THREE.SphereGeometry(15.15, 32, 32);
     var material = new THREE.MeshPhongMaterial({
-        map: new THREE.ImageUtils.loadTexture('img/starmap2_1k_v2.png'),
+        map: new THREE.ImageUtils.loadTexture('img/starmap1k_v2.png'),
         side: THREE.DoubleSide,
         opacity: 0.3,
         blending: THREE.AdditiveBlending,
@@ -405,12 +496,9 @@
         starMesh2.rotateY(1 / 33 * delta)
     })
 
-    // SUPER SIMPLE GLOW EFFECT
-    // use sprite because it appears the same from all angles
-
     var geometry = new THREE.SphereGeometry(90, 32, 32)
     var material = new THREE.MeshBasicMaterial()
-    material.map = THREE.ImageUtils.loadTexture('img/starfield_v2.png')
+    material.map = THREE.ImageUtils.loadTexture('img/galaxy_starfield.png')
     material.side = THREE.BackSide
     var mesh = new THREE.Mesh(geometry, material)
     scene.add(mesh)
@@ -445,6 +533,7 @@
         // mesh2.scale.x = .00025 * ( Date.now() - start );
         // mesh2.scale.y = .00025 * ( Date.now() - start );
         // mesh2.scale.z = .00025 * ( Date.now() - start );
+        GlowMaterial.uniforms.viewVector.value = new THREE.Vector3().subVectors( camera.position, ball.position );
         material2.uniforms[ 'time' ].value = .00025 * ( Date.now() - start );
         renderer.render(scene, camera);
     })
