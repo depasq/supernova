@@ -78,6 +78,8 @@
         <div id="introInfo">Once thermonuclear fusion triggers at the core of a clump, converting hydrogen into helium, a star is born. This massive supergiant star burns a brilliant blue with a luminosity nearly 1 million times the sun and a mass about 10-100 times that of the sun. Due to its massive size, this star has a relatively short lifespan of about 30 million years. When its core of hydrogen fuel is depleted, the star will expand in size and begin fusing heavier elements in the core. Eventually, a solid iron core develops which can not be fused into any heavier elements. The star then collapses in on itself, triggering a violent explosion known as a supernova. </div>
     </div>-->
     <div id="container"></div>
+    <script type="text/javascript" src="js/shaders/HorizontalBlurShader.js"></script>
+    <script type="text/javascript" src="js/shaders/VerticalBlurShader.js"></script>
 
     <script type="x-shader/x-vertex" id="GlowVertexShader">
         // uniform vec3 viewVector;
@@ -465,21 +467,52 @@
        uniforms: { 
             "c":   { type: "f", value: 0.5 },
             "p":   { type: "f", value: 1.0 },
-            glowColor: { type: "c", value: new THREE.Color(0xffffff) },
+            glowColor: { type: "c", value: new THREE.Color(0x252eb0) },
             viewVector: { type: "v3", value: camera.position }
         },
         vertexShader: document.getElementById( 'GlowVertexShader' ).textContent,
         fragmentShader: document.getElementById( 'GlowFragmentShader' ).textContent,
-        //side: THREE.BackSide,
+        side: THREE.BackSide,
         blending: THREE.AdditiveBlending,
-        // opacity: 0.2,
-         transparent: true,
+        transparent: true,
         depthWrite: false,
         depthTest: true
     });
     var IG_Geometry = new THREE.SphereGeometry (15.11, 32, 40);
     var IG = new THREE.Mesh( IG_Geometry, InnerGlow );
     scene.add( IG );
+
+    var Flare = new THREE.ShaderMaterial({
+        uniforms: {
+            tExplosion: {
+                type: "t",
+                value: THREE.ImageUtils.loadTexture( 'img/explosion.png' )
+            },
+            time: { //float initialized to 0 
+                type: "f",
+                value: 0.0
+            }
+        },
+        vertexShader: document.getElementById( 'vertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'fragmentShader').textContent,
+        depthWrite: false,
+        depthTest: true,
+        transparent: true
+    });
+    var mesh3 = new THREE.Mesh(
+        new THREE.TorusGeometry(9, 2, 26, 100),
+        Flare
+    );
+    mesh3.position.z = 6;
+    mesh3.scale.x = 1;
+    mesh3.scale.y = 1.5;
+    var mesh4 = mesh3.clone();
+    mesh4.rotation.y = 90;
+    mesh4.rotation.x = 90;
+    mesh4.rotation.z = 90;
+    scene.add( mesh3 );
+    scene.add( mesh4 ); 
+    
 
     var geometry = new THREE.SphereGeometry(15.15, 32, 32);
     var material = new THREE.MeshPhongMaterial({
@@ -534,7 +567,13 @@
         // mesh2.scale.y = .00025 * ( Date.now() - start );
         // mesh2.scale.z = .00025 * ( Date.now() - start );
         GlowMaterial.uniforms.viewVector.value = new THREE.Vector3().subVectors( camera.position, ball.position );
+        Flare.uniforms[ 'time' ].value = .000025 * ( Date.now() - start );
         material2.uniforms[ 'time' ].value = .00025 * ( Date.now() - start );
+
+        // mesh3.scale.x = .00025 * ( Date.now() - start );
+        // mesh3.scale.y = .00025 * ( Date.now() - start );
+        // mesh3.scale.z = .00025 * ( Date.now() - start );
+
         renderer.render(scene, camera);
     })
 
