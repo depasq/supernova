@@ -78,6 +78,10 @@
         <div id="introInfo">Once thermonuclear fusion triggers at the core of a clump, converting hydrogen into helium, a star is born. This massive supergiant star burns a brilliant blue with a luminosity nearly 1 million times the sun and a mass about 10-100 times that of the sun. Due to its massive size, this star has a relatively short lifespan of about 30 million years. When its core of hydrogen fuel is depleted, the star will expand in size and begin fusing heavier elements in the core. Eventually, a solid iron core develops which can not be fused into any heavier elements. The star then collapses in on itself, triggering a violent explosion known as a supernova. </div>
     </div>-->
     <div id="container"></div>
+    <script src="js/THREEx.KeyboardState.js"></script>
+    <script src="js/THREEx.FullScreen.js"></script>
+    <script src="js/THREEx.WindowResize.js"></script>
+    <script src="js/three.js"></script>
     <script type="text/javascript" src="js/shaders/HorizontalBlurShader.js"></script>
     <script type="text/javascript" src="js/shaders/VerticalBlurShader.js"></script>
 
@@ -343,10 +347,6 @@
         }
     </script>
     
-    <script src="js/THREEx.KeyboardState.js"></script>
-    <script src="js/THREEx.FullScreen.js"></script>
-    <script src="js/THREEx.WindowResize.js"></script>
-    <script src="js/three.js"></script>
     <script>
 
     var container, material2, mesh, start=Date.now(), fov =30;
@@ -357,6 +357,7 @@
 
     var onRenderFcts = [];
     var scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2( 0xefd1b5, 0.0025 );
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     camera.target = new THREE.Vector3( 0, 0, 0 );
     camera.position.z = 25;
@@ -369,6 +370,7 @@
 
     var light = new THREE.AmbientLight(0x888888)
     scene.add(light)
+    
 
     var light = new THREE.DirectionalLight(0xcccccc, 1)
     light.position.set(5, 3, 5)
@@ -380,7 +382,6 @@
     // });
 
     var material2 = new THREE.ShaderMaterial({
-
         uniforms: {
             tExplosion: {
                 type: "t",
@@ -398,7 +399,6 @@
         new THREE.IcosahedronGeometry( 8, 5 ),
         material2
     );
-
     scene.add( mesh2 );
 
     var material3 = new THREE.MeshBasicMaterial({
@@ -407,12 +407,15 @@
     });
 
     //TORUS to be used for creating flares off of star
-    var mesh3 = new THREE.Mesh(
+    var TMesh = new THREE.Mesh(
         new THREE.TorusGeometry(22, 3, 16, 100),
         material3
     );
-    mesh3.position.z = 8;
-    //scene.add( mesh3 );
+    TMesh.position.z = 4;
+    TMesh.position.y = 3;
+    TMesh.position.x = 1;
+    TMesh.rotation.x = 30;
+    scene.add( TMesh );
 
     var geometry = new THREE.SphereGeometry(15, 32, 32);
     var material = new THREE.MeshBasicMaterial();
@@ -482,6 +485,7 @@
     var IG = new THREE.Mesh( IG_Geometry, InnerGlow );
     scene.add( IG );
 
+    //create a bunch of stellar flares
     var Flare = new THREE.ShaderMaterial({
         uniforms: {
             tExplosion: {
@@ -490,8 +494,8 @@
             },
             time: { //float initialized to 0 
                 type: "f",
-                value: 0.0
-            }
+                value: 0.0              
+            },
         },
         vertexShader: document.getElementById( 'vertexShader' ).textContent,
         fragmentShader: document.getElementById( 'fragmentShader').textContent,
@@ -504,14 +508,44 @@
         Flare
     );
     mesh3.position.z = 6;
-    mesh3.scale.x = 1;
-    mesh3.scale.y = 1.5;
+    mesh3.scale.x = 0.5;
+    mesh3.scale.y = 0.5;
+    mesh3.scale.z = 0.5;
+ 
     var mesh4 = mesh3.clone();
+    mesh3.position.y = 10;
     mesh4.rotation.y = 90;
     mesh4.rotation.x = 90;
     mesh4.rotation.z = 90;
+    mesh4.scale.x=1;
+    mesh4.scale.y=1.5;
+    mesh4.scale.z=1;
+
+    var mesh5 = mesh4.clone();
+    mesh5.rotation.y = 56;
+    mesh5.rotation.x = 180;
+    mesh5.rotation.z = 180;
+    mesh5.position.x = 11;
+    mesh5.scale.x=0.4;
+    mesh5.scale.y=0.4;
+    mesh5.scale.z=0.4;
+
+    var mesh6 = mesh5.clone();
+    mesh6.rotation.y = 56;
+    mesh6.rotation.x = 50;
+    mesh6.rotation.z = 10;
+    mesh6.position.x = 1;
+    mesh6.position.z = -10;
+    mesh6.position.y = 10;
+
+    mesh6.scale.x=1;
+    mesh6.scale.y=1;
+    mesh6.scale.z=0.5;
+
     scene.add( mesh3 );
     scene.add( mesh4 ); 
+    scene.add( mesh5 ); 
+    scene.add( mesh6 ); 
     
 
     var geometry = new THREE.SphereGeometry(15.15, 32, 32);
