@@ -1,93 +1,10 @@
 <html>
 
 <head>
+    <title>A Star is Born</title>
     <link href='http://fonts.googleapis.com/css?family=Carrois+Gothic+SC' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Sarpanch' rel='stylesheet' type='text/css'>
-    <title>A Star is Born</title>
-    <style>
-	#site-title-bg {
-	    /*places title over map canvas*/
-	    position: absolute;
-	    z-index: 1;
-	    height: 70px;
-	    width: 500px;
-	    background-color: rgba(255, 255, 255, .25);
-	    left: 0px;
-	    top: 50px;
-	    border-radius: 0px 25px 25px 0px;
-	}
-	.site-title {
-	    position: absolute;
-	    font-family: 'Sarpanch', sans-serif;
-	    font-weight: normal;
-	    font-size: 50px;
-	    text-indent: 0px;
-	    left: 70px;
-	    margin: 0;
-	    padding: 0;
-	    color: #6ff;
-	    text-shadow: 2px 2px #666
-	}
-    #textBoxBG {
-        position: absolute;
-        z-index: 1;
-        height: 220px;
-        width: 0px;
-        background-color: rgba(255, 255, 255, .5);
-        right: 0px;
-        bottom: 25px;
-        border-radius: 25px 0px 0px 25px;
-        transition: 0.8s;
-    }
-    
-    #introInfo {
-        position: absolute;
-        font-weight: normal;
-        font-size: 22px;
-        text-indent: 0px;
-        margin: 5;
-        padding: 0;
-        text-align: center;
-        color: #000;
-        opacity: 0;
-        transition: 2s;
-        white-space: pre-wrap;
-    }
-    .nextBG {
-    position: absolute;
-    z-index: 1;
-    height: 40px;
-    width: 0px;
-    background-color: rgba(255, 255, 255, .5);
-    left: 0px;
-    bottom: 25px;
-    border-radius: 0px 25px 25px 0px;
-    transition: 0.8s; 
-    }
-    .next {
-        position: absolute;
-        font-weight: normal;
-        font-size: 24px;
-        text-indent: 0px;
-        margin: 5px;
-        text-align: center;
-        color: #fff;
-        opacity: 0;
-        transition: 2s;
-        white-space: pre-wrap;
-        text-shadow: 2px 2px #666
-    }
-
-    body {
-        font-family: 'Carrois Gothic SC', sans-serif;
-        margin: 0;
-    }
-    
-    canvas {
-        width: 100%;
-        height: 100%
-    }
-    </style>
+    <link rel=stylesheet href="css/star.css" />
 </head>
 
 <body>
@@ -100,22 +17,295 @@
         <div id="introInfo">Once thermonuclear fusion triggers at the core of a clump, converting hydrogen into helium, a star is born. This massive supergiant star burns a brilliant blue with a luminosity nearly 1 million times the sun and a mass about 10-100 times that of the sun. Due to its massive size, this star has a relatively short lifespan of about 30 million years. When its core of hydrogen fuel is depleted, the star will expand in size and begin fusing heavier elements in the core. Eventually, a solid iron core develops which can not be fused into any heavier elements. The star then collapses in on itself, triggering a violent explosion known as a supernova. </div>
     </div>
     <div class="nextBG">
-        <div class="next"><a href="./star.html">Next</a></div>
+    <div class="next"><a href="./exploding_star.html">Next</a></div>
     </div>
 
+    <div id="container"></div>
     <script src="js/THREEx.KeyboardState.js"></script>
     <script src="js/THREEx.FullScreen.js"></script>
     <script src="js/THREEx.WindowResize.js"></script>
     <script src="js/three.js"></script>
+    <script type="text/javascript" src="js/shaders/HorizontalBlurShader.js"></script>
+    <script type="text/javascript" src="js/shaders/VerticalBlurShader.js"></script>
+
+    <script type="x-shader/x-vertex" id="GlowVertexShader">
+        // uniform vec3 viewVector;
+        // void main() 
+        // {
+        //     vec3 vNormal = normalize( normalMatrix * normal );
+        //     vec3 vNormel = normalize( normalMatrix * viewVector );
+        //     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        // }
+        uniform vec3 viewVector;
+        uniform float c;
+        uniform float p;
+        varying float intensity;
+        void main() 
+        {
+            vec3 vNormal = normalize( normalMatrix * normal );
+            vec3 vNormel = normalize( normalMatrix * viewVector );
+            intensity = pow( c - dot(vNormal, vNormel), p);
+            
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }
+    </script>
+    <script id="GlowFragmentShader" type="x-shader/x-vertex">
+        uniform vec3 glowColor;
+        varying float intensity;
+        void main() 
+        {
+            vec3 glow = glowColor * intensity;
+            gl_FragColor = vec4( glow, 1.0 );
+        }
+    </script>
+    <script type="x-shader/x-vertex" id="vertexShader">
+
+        //
+        // GLSL textureless classic 3D noise "cnoise",
+        // with an RSL-style periodic variant "pnoise".
+        // Author:  Stefan Gustavson (stefan.gustavson@liu.se)
+        // Version: 2011-10-11
+        //
+        // Many thanks to Ian McEwan of Ashima Arts for the
+        // ideas for permutation and gradient selection.
+        //
+        // Copyright (c) 2011 Stefan Gustavson. All rights reserved.
+        // Distributed under the MIT license. See LICENSE file.
+        // https://github.com/ashima/webgl-noise
+        //
+
+        vec3 mod289(vec3 x)
+        {
+          return x - floor(x * (1.0 / 289.0)) * 289.0;
+        }
+
+        vec4 mod289(vec4 x)
+        {
+          return x - floor(x * (1.0 / 289.0)) * 289.0;
+        }
+
+        vec4 permute(vec4 x)
+        {
+          return mod289(((x*34.0)+1.0)*x);
+        }
+
+        vec4 taylorInvSqrt(vec4 r)
+        {
+          return 1.79284291400159 - 0.85373472095314 * r;
+        }
+
+        vec3 fade(vec3 t) {
+          return t*t*t*(t*(t*6.0-15.0)+10.0);
+        }
+
+        // Classic Perlin noise
+        float cnoise(vec3 P)
+        {
+          vec3 Pi0 = floor(P); // Integer part for indexing
+          vec3 Pi1 = Pi0 + vec3(1.0); // Integer part + 1
+          Pi0 = mod289(Pi0);
+          Pi1 = mod289(Pi1);
+          vec3 Pf0 = fract(P); // Fractional part for interpolation
+          vec3 Pf1 = Pf0 - vec3(1.0); // Fractional part - 1.0
+          vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
+          vec4 iy = vec4(Pi0.yy, Pi1.yy);
+          vec4 iz0 = Pi0.zzzz;
+          vec4 iz1 = Pi1.zzzz;
+
+          vec4 ixy = permute(permute(ix) + iy);
+          vec4 ixy0 = permute(ixy + iz0);
+          vec4 ixy1 = permute(ixy + iz1);
+
+          vec4 gx0 = ixy0 * (1.0 / 7.0);
+          vec4 gy0 = fract(floor(gx0) * (1.0 / 7.0)) - 0.5;
+          gx0 = fract(gx0);
+          vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);
+          vec4 sz0 = step(gz0, vec4(0.0));
+          gx0 -= sz0 * (step(0.0, gx0) - 0.5);
+          gy0 -= sz0 * (step(0.0, gy0) - 0.5);
+
+          vec4 gx1 = ixy1 * (1.0 / 7.0);
+          vec4 gy1 = fract(floor(gx1) * (1.0 / 7.0)) - 0.5;
+          gx1 = fract(gx1);
+          vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);
+          vec4 sz1 = step(gz1, vec4(0.0));
+          gx1 -= sz1 * (step(0.0, gx1) - 0.5);
+          gy1 -= sz1 * (step(0.0, gy1) - 0.5);
+
+          vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);
+          vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);
+          vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);
+          vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);
+          vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);
+          vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);
+          vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);
+          vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);
+
+          vec4 norm0 = taylorInvSqrt(vec4(dot(g000, g000), dot(g010, g010), dot(g100, g100), dot(g110, g110)));
+          g000 *= norm0.x;
+          g010 *= norm0.y;
+          g100 *= norm0.z;
+          g110 *= norm0.w;
+          vec4 norm1 = taylorInvSqrt(vec4(dot(g001, g001), dot(g011, g011), dot(g101, g101), dot(g111, g111)));
+          g001 *= norm1.x;
+          g011 *= norm1.y;
+          g101 *= norm1.z;
+          g111 *= norm1.w;
+
+          float n000 = dot(g000, Pf0);
+          float n100 = dot(g100, vec3(Pf1.x, Pf0.yz));
+          float n010 = dot(g010, vec3(Pf0.x, Pf1.y, Pf0.z));
+          float n110 = dot(g110, vec3(Pf1.xy, Pf0.z));
+          float n001 = dot(g001, vec3(Pf0.xy, Pf1.z));
+          float n101 = dot(g101, vec3(Pf1.x, Pf0.y, Pf1.z));
+          float n011 = dot(g011, vec3(Pf0.x, Pf1.yz));
+          float n111 = dot(g111, Pf1);
+
+          vec3 fade_xyz = fade(Pf0);
+          vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
+          vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
+          float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
+          return 2.2 * n_xyz;
+        }
+
+        // Classic Perlin noise, periodic variant
+        float pnoise(vec3 P, vec3 rep)
+        {
+          vec3 Pi0 = mod(floor(P), rep); // Integer part, modulo period
+          vec3 Pi1 = mod(Pi0 + vec3(1.0), rep); // Integer part + 1, mod period
+          Pi0 = mod289(Pi0);
+          Pi1 = mod289(Pi1);
+          vec3 Pf0 = fract(P); // Fractional part for interpolation
+          vec3 Pf1 = Pf0 - vec3(1.0); // Fractional part - 1.0
+          vec4 ix = vec4(Pi0.x, Pi1.x, Pi0.x, Pi1.x);
+          vec4 iy = vec4(Pi0.yy, Pi1.yy);
+          vec4 iz0 = Pi0.zzzz;
+          vec4 iz1 = Pi1.zzzz;
+
+          vec4 ixy = permute(permute(ix) + iy);
+          vec4 ixy0 = permute(ixy + iz0);
+          vec4 ixy1 = permute(ixy + iz1);
+
+          vec4 gx0 = ixy0 * (1.0 / 7.0);
+          vec4 gy0 = fract(floor(gx0) * (1.0 / 7.0)) - 0.5;
+          gx0 = fract(gx0);
+          vec4 gz0 = vec4(0.5) - abs(gx0) - abs(gy0);
+          vec4 sz0 = step(gz0, vec4(0.0));
+          gx0 -= sz0 * (step(0.0, gx0) - 0.5);
+          gy0 -= sz0 * (step(0.0, gy0) - 0.5);
+
+          vec4 gx1 = ixy1 * (1.0 / 7.0);
+          vec4 gy1 = fract(floor(gx1) * (1.0 / 7.0)) - 0.5;
+          gx1 = fract(gx1);
+          vec4 gz1 = vec4(0.5) - abs(gx1) - abs(gy1);
+          vec4 sz1 = step(gz1, vec4(0.0));
+          gx1 -= sz1 * (step(0.0, gx1) - 0.5);
+          gy1 -= sz1 * (step(0.0, gy1) - 0.5);
+
+          vec3 g000 = vec3(gx0.x,gy0.x,gz0.x);
+          vec3 g100 = vec3(gx0.y,gy0.y,gz0.y);
+          vec3 g010 = vec3(gx0.z,gy0.z,gz0.z);
+          vec3 g110 = vec3(gx0.w,gy0.w,gz0.w);
+          vec3 g001 = vec3(gx1.x,gy1.x,gz1.x);
+          vec3 g101 = vec3(gx1.y,gy1.y,gz1.y);
+          vec3 g011 = vec3(gx1.z,gy1.z,gz1.z);
+          vec3 g111 = vec3(gx1.w,gy1.w,gz1.w);
+
+          vec4 norm0 = taylorInvSqrt(vec4(dot(g000, g000), dot(g010, g010), dot(g100, g100), dot(g110, g110)));
+          g000 *= norm0.x;
+          g010 *= norm0.y;
+          g100 *= norm0.z;
+          g110 *= norm0.w;
+          vec4 norm1 = taylorInvSqrt(vec4(dot(g001, g001), dot(g011, g011), dot(g101, g101), dot(g111, g111)));
+          g001 *= norm1.x;
+          g011 *= norm1.y;
+          g101 *= norm1.z;
+          g111 *= norm1.w;
+
+          float n000 = dot(g000, Pf0);
+          float n100 = dot(g100, vec3(Pf1.x, Pf0.yz));
+          float n010 = dot(g010, vec3(Pf0.x, Pf1.y, Pf0.z));
+          float n110 = dot(g110, vec3(Pf1.xy, Pf0.z));
+          float n001 = dot(g001, vec3(Pf0.xy, Pf1.z));
+          float n101 = dot(g101, vec3(Pf1.x, Pf0.y, Pf1.z));
+          float n011 = dot(g011, vec3(Pf0.x, Pf1.yz));
+          float n111 = dot(g111, Pf1);
+
+          vec3 fade_xyz = fade(Pf0);
+          vec4 n_z = mix(vec4(n000, n100, n010, n110), vec4(n001, n101, n011, n111), fade_xyz.z);
+          vec2 n_yz = mix(n_z.xy, n_z.zw, fade_xyz.y);
+          float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x); 
+          return 2.2 * n_xyz;
+        }
+
+        varying vec2 vUv;
+        varying float noise;
+        uniform float time;
+
+        float turbulence( vec3 p ) {
+            float w = 100.0;
+            float t = -.5;
+            for (float f = 1.0 ; f <= 10.0 ; f++ ){
+                float power = pow( 2.0, f );
+                t += abs( pnoise( vec3( power * p ), vec3( 10.0, 10.0, 10.0 ) ) / power );
+            }
+            return t;
+        }
+
+        void main() {
+
+            vUv = uv;
+
+            // get a turbulent 3d noise using the normal, normal to high freq
+            noise = 10.0 *  -.10 * turbulence( .5 * normal + time );
+            // get a 3d noise using the position, low frequency
+            float b = 5.0 * pnoise( 0.05 * position + vec3( 2.0 * time), vec3(100.0) );
+            // compose both noises
+            float displacement = - 3. * noise + b;
+            
+            // move the position along the normal and transform it
+            vec3 newPosition = position + normal * displacement;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+
+        }
+    </script>
+    <script type="x-shader/x-vertex" id="fragmentShader">
+        varying vec2 vUv;
+        varying float noise;
+        uniform sampler2D tExplosion;
+
+        float random( vec3 scale, float seed ){
+            return fract( sin( dot( gl_FragCoord.xyz + seed, scale ) ) * 43758.5453 + seed ) ;
+        }
+
+        void main() {
+            // get a random offset
+            float r = .01 * random( vec3( 12.9898, 78.233, 151.7182 ), 0.0 );
+            // lookup vertically in the texture, using noise and offset
+            // to get the right RGB colour
+            vec2 tPos = vec2( 0, 1.3 * noise + r );
+            vec4 color = texture2D( tExplosion, tPos );
+
+            gl_FragColor = vec4( color.rgb, 1.0 );
+        }
+    </script>
+    
     <script>
+
+    var container, material2, mesh, start=Date.now(), fov =30;
+
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
     var onRenderFcts = [];
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
-    camera.position.z = 1.5;
+    scene.fog = new THREE.FogExp2( 0xefd1b5, 0.0025 );
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+    camera.target = new THREE.Vector3( 0, 0, 0 );
+    camera.position.x = 24;
+    camera.position.y = 2;
+    camera.position.z = 35; 
 
     //EVENTS
     THREEx.WindowResize(renderer, camera);
@@ -125,35 +315,187 @@
 
     var light = new THREE.AmbientLight(0x888888)
     scene.add(light)
+    
 
     var light = new THREE.DirectionalLight(0xcccccc, 1)
     light.position.set(5, 3, 5)
     scene.add(light)
 
-    var geometry = new THREE.SphereGeometry(0.5, 32, 32);
+    // var material2 = new THREE.MeshBasicMaterial({
+    //     color: 0xb7ff00,
+    //     wireframe: true
+    // });
+
+    var material2 = new THREE.ShaderMaterial({
+        uniforms: {
+            tExplosion: {
+                type: "t",
+                value: THREE.ImageUtils.loadTexture( 'img/explosion.png' )
+            },
+            time: { //float initialized to 0 
+                type: "f",
+                value: 0.0
+            }
+        },
+        vertexShader: document.getElementById( 'vertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'fragmentShader').textContent
+    });
+    var mesh2 = new THREE.Mesh(
+        new THREE.IcosahedronGeometry( 8, 5 ),
+        material2
+    );
+    scene.add( mesh2 );
+
+    var material3 = new THREE.MeshBasicMaterial({
+        color: 0xb7ff00,
+        wireframe: true
+    });
+
+    //TORUS to be used for creating flares off of star
+    var TMesh = new THREE.Mesh(
+        new THREE.TorusGeometry(22, 3, 16, 100),
+        material3
+    );
+    TMesh.position.z = 4;
+    TMesh.position.y = 3;
+    TMesh.position.x = 1;
+    TMesh.rotation.x = 30;
+    //scene.add( TMesh );
+
+    var geometry = new THREE.SphereGeometry(15, 32, 32);
     var material = new THREE.MeshBasicMaterial();
-    material.map = THREE.ImageUtils.loadTexture('img/starmap1k_v2.png')
+    material.map = THREE.ImageUtils.loadTexture('img/starmap2_1k_v3.png')
     var starMesh = new THREE.Mesh(geometry, material);
     scene.add(starMesh);
     onRenderFcts.push(function(delta, now) {
         starMesh.rotateY(1 / 32 * delta)
     })
 
+//using lensflare sprite as glow around star
     var spriteMaterial = new THREE.SpriteMaterial({
-        map: new THREE.ImageUtils.loadTexture('img/glow.png'),
+        map: new THREE.ImageUtils.loadTexture('img/lensflare0_alpha.png'),
         useScreenCoordinates: false,
         alignment: THREE.SpriteAlignment.center,
-        color: 0x0000ff,
+        color: 0x0033cc,
         transparent: false,
         blending: THREE.AdditiveBlending
     });
     var sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(1.0, 1.0, 1.0);
+    sprite.scale.set(150.0, 150.0, 150.0);
+    var sp2 = sprite.clone();
     starMesh.add(sprite); // this centers the glow at the mesh
+    starMesh.add(sp2);
 
-    var geometry = new THREE.SphereGeometry(0.505, 32, 32);
+//add in custom shader around rim of star
+    // var material4 = new THREE.MeshBasicMaterial({
+    //     color: 0xb7ff00,
+    //     wireframe: true
+    // });
+ 
+    var GlowMaterial = new THREE.ShaderMaterial({
+        uniforms: { 
+            "c":   { type: "f", value: 0.5 },
+            "p":   { type: "f", value: 3.0 },
+            glowColor: { type: "c", value: new THREE.Color(0xffffff) },
+            viewVector: { type: "v3", value: camera.position }
+        },
+        vertexShader: document.getElementById( 'GlowVertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'GlowFragmentShader' ).textContent,
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthWrite: false,
+        depthTest: true
+    });
+    var ballGeometry = new THREE.SphereGeometry (23, 32, 20);
+    var ball = new THREE.Mesh( ballGeometry, GlowMaterial );
+    scene.add( ball );
+
+    var InnerGlow = new THREE.ShaderMaterial({
+       uniforms: { 
+            "c":   { type: "f", value: 0.5 },
+            "p":   { type: "f", value: 1.0 },
+            glowColor: { type: "c", value: new THREE.Color(0x252eb0) },
+            viewVector: { type: "v3", value: camera.position }
+        },
+        vertexShader: document.getElementById( 'GlowVertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'GlowFragmentShader' ).textContent,
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthWrite: false,
+        depthTest: true
+    });
+    var IG_Geometry = new THREE.SphereGeometry (15.11, 32, 40);
+    var IG = new THREE.Mesh( IG_Geometry, InnerGlow );
+    scene.add( IG );
+
+    //create a bunch of stellar flares
+    var Flare = new THREE.ShaderMaterial({
+        uniforms: {
+            tExplosion: {
+                type: "t",
+                value: THREE.ImageUtils.loadTexture( 'img/explosion.png' )
+            },
+            time: { //float initialized to 0 
+                type: "f",
+                value: 0.0              
+            },
+        },
+        vertexShader: document.getElementById( 'vertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'fragmentShader').textContent,
+        depthWrite: false,
+        depthTest: true,
+        transparent: true
+    });
+    var mesh3 = new THREE.Mesh(
+        new THREE.TorusGeometry(9, 2, 26, 100),
+        Flare
+    );
+    mesh3.position.z = 6;
+    mesh3.scale.x = 0.5;
+    mesh3.scale.y = 0.5;
+    mesh3.scale.z = 0.5;
+ 
+    var mesh4 = mesh3.clone();
+    mesh3.position.y = 10;
+    mesh4.rotation.y = 90;
+    mesh4.rotation.x = 90;
+    mesh4.rotation.z = 90;
+    mesh4.scale.x=1;
+    mesh4.scale.y=1.5;
+    mesh4.scale.z=1;
+
+    var mesh5 = mesh4.clone();
+    mesh5.rotation.y = 56;
+    mesh5.rotation.x = 180;
+    mesh5.rotation.z = 180;
+    mesh5.position.x = 11;
+    mesh5.scale.x=0.4;
+    mesh5.scale.y=0.4;
+    mesh5.scale.z=0.4;
+
+    var mesh6 = mesh5.clone();
+    mesh6.rotation.y = 56;
+    mesh6.rotation.x = 50;
+    mesh6.rotation.z = 10;
+    mesh6.position.x = 1;
+    mesh6.position.z = -10;
+    mesh6.position.y = 10;
+
+    mesh6.scale.x=1;
+    mesh6.scale.y=1;
+    mesh6.scale.z=0.5;
+
+    scene.add( mesh3 );
+    scene.add( mesh4 ); 
+    scene.add( mesh5 ); 
+    scene.add( mesh6 ); 
+    
+
+    var geometry = new THREE.SphereGeometry(15.15, 32, 32);
     var material = new THREE.MeshPhongMaterial({
-        map: new THREE.ImageUtils.loadTexture('img/starmap2_1k_v2.png'),
+        map: new THREE.ImageUtils.loadTexture('img/starmap1k_v2.png'),
         side: THREE.DoubleSide,
         opacity: 0.3,
         blending: THREE.AdditiveBlending,
@@ -166,12 +508,9 @@
         starMesh2.rotateY(1 / 33 * delta)
     })
 
-    // SUPER SIMPLE GLOW EFFECT
-    // use sprite because it appears the same from all angles
-
     var geometry = new THREE.SphereGeometry(90, 32, 32)
     var material = new THREE.MeshBasicMaterial()
-    material.map = THREE.ImageUtils.loadTexture('img/starfield_v2.png')
+    material.map = THREE.ImageUtils.loadTexture('img/galaxy_starfield.png')
     material.side = THREE.BackSide
     var mesh = new THREE.Mesh(geometry, material)
     scene.add(mesh)
@@ -183,7 +522,7 @@
     // var mesh  = new THREE.Mesh(geometry, material)
     // scene.add(mesh)
     //////////////////////////////////////////////////////////////////////////////////
-    //		Camera Controls							//
+    //      Camera Controls                         //
     //////////////////////////////////////////////////////////////////////////////////
     var mouse = {
         x: 0,
@@ -194,20 +533,31 @@
         mouse.y = (event.clientY / window.innerHeight) - 0.5
     }, false)
     onRenderFcts.push(function(delta, now) {
-        camera.position.x += (mouse.x * 5 - camera.position.x) * (delta * 3)
-        camera.position.y += (mouse.y * 5 - camera.position.y) * (delta * 3)
+        camera.position.x += (mouse.x * 70 - camera.position.x) * (delta * 3)
+        camera.position.y += (mouse.y * 70 - camera.position.y) * (delta * 3)
         camera.lookAt(scene.position)
     })
 
     //////////////////////////////////////////////////////////////////////////////////
-    //		render the scene						//
+    //      render the scene                        //
     //////////////////////////////////////////////////////////////////////////////////
     onRenderFcts.push(function() {
+        // mesh2.scale.x = .00025 * ( Date.now() - start );
+        // mesh2.scale.y = .00025 * ( Date.now() - start );
+        // mesh2.scale.z = .00025 * ( Date.now() - start );
+        GlowMaterial.uniforms.viewVector.value = new THREE.Vector3().subVectors( camera.position, ball.position );
+        Flare.uniforms[ 'time' ].value = .000025 * ( Date.now() - start );
+        material2.uniforms[ 'time' ].value = .00025 * ( Date.now() - start );
+
+        // mesh3.scale.x = .00025 * ( Date.now() - start );
+        // mesh3.scale.y = .00025 * ( Date.now() - start );
+        // mesh3.scale.z = .00025 * ( Date.now() - start );
+
         renderer.render(scene, camera);
     })
 
     //////////////////////////////////////////////////////////////////////////////////
-    //		loop runner							//
+    //      loop runner                         //
     //////////////////////////////////////////////////////////////////////////////////
     var lastTimeMsec = null
     requestAnimationFrame(function animate(nowMsec) {
@@ -228,12 +578,10 @@
         document.getElementById('textBoxBG').style.width = 950 + 'px';
         document.getElementsByClassName('nextBG')[0].style.width = 70 + 'px';
         setTimeout(function() {
-            //info.style.opacity = 1;
             document.getElementsByClassName('next')[0].style.opacity = 1;
             document.getElementById('introInfo').style.opacity = 1;
-        }, 500);
+        }, 1500);
     }, 500);
- 
 
     //render();
     </script>

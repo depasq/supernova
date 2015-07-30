@@ -3,80 +3,32 @@
 <head>
     <link href='http://fonts.googleapis.com/css?family=Carrois+Gothic+SC' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Sarpanch' rel='stylesheet' type='text/css'>
+    <link rel=stylesheet href="css/star.css" />    
     <title>A Star is Born</title>
     <style>
-    #site-title-bg {
+    #site-title-bg2 {
         /*places title over map canvas*/
         position: absolute;
         z-index: 1;
         height: 70px;
-        width: 500px;
+        width: 650px;
         background-color: rgba(255, 255, 255, .25);
         left: 0px;
         top: 50px;
         border-radius: 0px 25px 25px 0px;
     }
-    
-    .site-title {
-        position: absolute;
-        font-family: 'Sarpanch', sans-serif;
-        font-weight: normal;
-        font-size: 50px;
-        text-indent: 0px;
-        left: 70px;
-        margin: 0;
-        padding: 0;
-        color: #6ff;
-        text-shadow: 2px 2px #666
-    }
-    
-    #textBoxBG {
-        position: absolute;
-        z-index: 1;
-        height: 220px;
-        width: 0px;
-        background-color: rgba(255, 255, 255, .5);
-        right: 0px;
-        bottom: 25px;
-        border-radius: 25px 0px 0px 25px;
-        transition: 0.8s;
-    }
-    
-    #introInfo {
-        position: absolute;
-        font-weight: normal;
-        font-size: 22px;
-        text-indent: 0px;
-        margin: 5;
-        padding: 0;
-        text-align: center;
-        color: #000;
-        opacity: 0;
-        transition: 2s;
-        white-space: pre-wrap;
-    }
-    
-    body {
-        font-family: 'Carrois Gothic SC', sans-serif;
-        margin: 0;
-    }
-    
-    canvas {
-        width: 100%;
-        height: 100%
-    }
-    </style>
+   </style>
 </head>
 
 <body>
-    <!--<div id="site-title-bg">
-        <h1 class="site-title">A Star is Born</h1>
+    <<div id="site-title-bg2">
+        <h1 class="site-title">Core Helium Burning</h1>
     </div>
 
 
     <div id="textBoxBG">
-        <div id="introInfo">Once thermonuclear fusion triggers at the core of a clump, converting hydrogen into helium, a star is born. This massive supergiant star burns a brilliant blue with a luminosity nearly 1 million times the sun and a mass about 10-100 times that of the sun. Due to its massive size, this star has a relatively short lifespan of about 30 million years. When its core of hydrogen fuel is depleted, the star will expand in size and begin fusing heavier elements in the core. Eventually, a solid iron core develops which can not be fused into any heavier elements. The star then collapses in on itself, triggering a violent explosion known as a supernova. </div>
-    </div>-->
+        <div id="introInfo">As we dive deep into the interior of the star, the writhing core becomes visible. As the supply of hydrogen in the star's core is depleted, the star begins to burn helium into the heavier elements of carbon and oxygen in a process known as core helium burning (grossly over simplified!). Eventually, the core burns heavier elements until a solid core of iron develops which cannot be converted into anything heavier. At this point the star can no longer support the inward pull of gravity and collapses on itself triggering a supernova.</div>
+    </div>
     <div id="container"></div>
     <script src="js/THREEx.KeyboardState.js"></script>
     <script src="js/THREEx.FullScreen.js"></script>
@@ -349,7 +301,7 @@
     
     <script>
 
-    var container, material2, mesh, start=Date.now(), fov =30;
+    var container, material2, mesh, start=Date.now(), fov =30, i = 0;
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -360,7 +312,7 @@
     scene.fog = new THREE.FogExp2( 0xefd1b5, 0.0025 );
     var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
     camera.target = new THREE.Vector3( 0, 0, 0 );
-    camera.position.z = 25;
+    camera.position.z = 35;
 
     //EVENTS
     THREEx.WindowResize(renderer, camera);
@@ -415,7 +367,7 @@
     TMesh.position.y = 3;
     TMesh.position.x = 1;
     TMesh.rotation.x = 30;
-    scene.add( TMesh );
+    //scene.add( TMesh );
 
     var geometry = new THREE.SphereGeometry(15, 32, 32);
     var material = new THREE.MeshBasicMaterial();
@@ -542,10 +494,10 @@
     mesh6.scale.y=1;
     mesh6.scale.z=0.5;
 
-    scene.add( mesh3 );
-    scene.add( mesh4 ); 
-    scene.add( mesh5 ); 
-    scene.add( mesh6 ); 
+    // scene.add( mesh3 );
+    // scene.add( mesh4 ); 
+    // scene.add( mesh5 ); 
+    // scene.add( mesh6 ); 
     
 
     var geometry = new THREE.SphereGeometry(15.15, 32, 32);
@@ -604,6 +556,18 @@
         Flare.uniforms[ 'time' ].value = .000025 * ( Date.now() - start );
         material2.uniforms[ 'time' ].value = .00025 * ( Date.now() - start );
 
+        if (starMesh.scale.x < 3.3){
+          starMesh.scale.x += 0.008;
+          starMesh.scale.y += 0.008;
+          starMesh.scale.z += 0.008;
+          ball.scale.x += 0.008;
+          ball.scale.y += 0.008;
+          ball.scale.z += 0.008;
+        } else if (mesh2.scale.x < 3) {
+          mesh2.scale.x += 0.008;
+          mesh2.scale.y += 0.008;
+          mesh2.scale.z += 0.008;
+        }
         // mesh3.scale.x = .00025 * ( Date.now() - start );
         // mesh3.scale.y = .00025 * ( Date.now() - start );
         // mesh3.scale.z = .00025 * ( Date.now() - start );
@@ -618,6 +582,7 @@
     requestAnimationFrame(function animate(nowMsec) {
         // keep looping
         requestAnimationFrame(animate);
+
         // measure time
         lastTimeMsec = lastTimeMsec || nowMsec - 1000 / 60
         var deltaMsec = Math.min(200, nowMsec - lastTimeMsec)
@@ -628,13 +593,15 @@
         })
     })
 
-    // setTimeout(function() {
-    //     document.getElementById('introInfo').style.display = "block";
-    //     document.getElementById('textBoxBG').style.width = 950 + 'px';
-    //     setTimeout(function() {
-    //         document.getElementById('introInfo').style.opacity = 1;
-    //     }, 500);
-    // }, 500);
+    setTimeout(function() {
+        document.getElementById('introInfo').style.display = "block";
+        document.getElementById('textBoxBG').style.width = 950 + 'px';
+        //document.getElementsByClassName('nextBG')[0].style.width = 70 + 'px';
+        setTimeout(function() {
+            //document.getElementsByClassName('next')[0].style.opacity = 1;
+            document.getElementById('introInfo').style.opacity = 1;
+        }, 1500);
+    }, 500);
 
     //render();
     </script>
