@@ -21,7 +21,7 @@
 </head>
 
 <body>
-    <<div id="site-title-bg2">
+    <div id="site-title-bg2">
         <h1 class="site-title">Core Helium Burning</h1>
     </div>
 
@@ -29,6 +29,9 @@
     <div id="textBoxBG">
         <div id="introInfo">As we dive deep into the interior of the star, the writhing core becomes visible. As the supply of hydrogen in the star's core is depleted, the star begins to burn helium into the heavier elements of carbon and oxygen in a process known as core helium burning (grossly over simplified!). Eventually, the core burns heavier elements until a solid core of iron develops which cannot be converted into anything heavier. At this point the star can no longer support the inward pull of gravity and collapses on itself triggering a supernova.</div>
     </div>
+       <div class="nextBG">
+    <div class="next"><a href="../reveal.js/?transition=convex/#/8">Next</a></div>
+ 
     <div id="container"></div>
     <script src="js/THREEx.KeyboardState.js"></script>
     <script src="js/THREEx.FullScreen.js"></script>
@@ -596,9 +599,9 @@
     setTimeout(function() {
         document.getElementById('introInfo').style.display = "block";
         document.getElementById('textBoxBG').style.width = 950 + 'px';
-        //document.getElementsByClassName('nextBG')[0].style.width = 70 + 'px';
+        document.getElementsByClassName('nextBG')[0].style.width = 70 + 'px';
         setTimeout(function() {
-            //document.getElementsByClassName('next')[0].style.opacity = 1;
+            document.getElementsByClassName('next')[0].style.opacity = 1;
             document.getElementById('introInfo').style.opacity = 1;
         }, 1500);
     }, 500);
